@@ -1,10 +1,30 @@
 using System.Text;
 using base_transport;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 
 namespace base_transport_tests;
 
 public class TEST_TransportationLayer
 {
+    private readonly IContainer _container = new ContainerBuilder()
+        .WithName("rabbitmq-test-container")
+        .WithImage("docker.io/rabbitmq:4.1.4-management-alpine")
+        .WithPortBinding("5672", "5672")
+        .WithPortBinding("15672", "15672")
+        .WithEnvironment("RABBITMQ_DEFAULT_USER", "admin")
+        .WithEnvironment("RABBITMQ_DEFAULT_PASS", "admin")
+        .WithEnvironment("RABBITMQ_DEFAULT_VHOST", "/")
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(15672)))
+        .WithReuse(true)
+        .Build();
+
+    public TEST_TransportationLayer()
+    {
+         _container.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+    }
+
+
     [Fact]
     public void If_TransportationLayerCredentials_Is_Null()
     {
@@ -35,6 +55,10 @@ public class TEST_TransportationLayer
     [Fact]
     public async Task If_TransportationLayer_Can_Connect()
     {
+
+        
+        // Thread.Sleep(15000);
+
         var credentials = new TransportationLayerCredentials
         {
             HostName = "localhost",
@@ -51,6 +75,7 @@ public class TEST_TransportationLayer
     [Fact]
     public async Task If_TransportationLayer_Can_Send_Message()
     {
+        
         var credentials = new TransportationLayerCredentials
         {
             HostName = "localhost",
@@ -72,6 +97,7 @@ public class TEST_TransportationLayer
     [Fact]
     public async Task If_TransportationLayer_Can_Receive_Message()
     {
+        
         var credentials = new TransportationLayerCredentials
         {
             HostName = "localhost",

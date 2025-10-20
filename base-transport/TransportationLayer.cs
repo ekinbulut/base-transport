@@ -35,11 +35,15 @@ public class TransportationLayer(TransportationLayerCredentials? credentials = n
 
     public async Task BasicPublishAsync(string queueName, byte[] body, CancellationToken cancellationToken = default)
     {
+
         if (!IsOpen)
         {
             throw new InvalidOperationException("Connection is not open.");
         }
-
+        
+        await _channel.QueueDeclareAsync(queue: queueName, durable: true, exclusive: false, autoDelete: false,
+            arguments: null, cancellationToken: cancellationToken);
+        
         await _channel.BasicPublishAsync(string.Empty, queueName, body, cancellationToken: cancellationToken);
     }
 
