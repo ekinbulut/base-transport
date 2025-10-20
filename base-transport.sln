@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "base-transport", "base-transport\base-transport.csproj", "{406A963E-A515-4B46-95EC-9502A6782E12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "base-transport-tests", "base-transport-tests\base-transport-tests.csproj", "{D6FD31FE-29AB-49C6-8997-405D03778EC7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{406A963E-A515-4B46-95EC-9502A6782E12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{406A963E-A515-4B46-95EC-9502A6782E12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{406A963E-A515-4B46-95EC-9502A6782E12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{406A963E-A515-4B46-95EC-9502A6782E12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6FD31FE-29AB-49C6-8997-405D03778EC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6FD31FE-29AB-49C6-8997-405D03778EC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6FD31FE-29AB-49C6-8997-405D03778EC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6FD31FE-29AB-49C6-8997-405D03778EC7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

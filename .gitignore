@@ -1,0 +1,80 @@
+# .NET / Visual Studio
+.vs/
+.vscode/
+bin/
+obj/
+[Bb]uild/
+artifacts/
+publish/
+TestResults/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.nupkg
+packages/
+.nuget/packages/
+project.lock.json
+project.fragment.lock.json
+*.log
+*.vspscc
+*.vssscc
+*.dbmdl
+*.bak
+*.publishsettings
+
+# Rider / IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/shelf/
+.idea/**/dictionaries/
+.idea/**/usage.statistics.xml
+
+# JetBrains Rider caches and settings
+.idea/.name
+.idea_modules/
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# User-specific
+*.user
+*.userprefs
+*.suo
+
+# Build/test outputs, coverage
+coverage/
+*.coverage
+*.coveragexml
+TestResults/
+
+# ASP.NET / Azure
+local.settings.json
+
+# NuGet
+packages/
+*.nupkg
+
+# Node / frontend (optional)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets / local files
+secrets.json
+.env
+
+# Misc
+*.vsix
+*.class
