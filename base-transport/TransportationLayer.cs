@@ -54,6 +54,9 @@ public class TransportationLayer(TransportationLayerCredentials? credentials = n
         {
             throw new InvalidOperationException("Connection is not open.");
         }
+        
+        await _channel.QueueDeclareAsync(queue: queueName, durable: true, exclusive: false, autoDelete: false,
+            arguments: null, cancellationToken: cancellationToken);
 
         _asyncEventingBasicConsumer = new AsyncEventingBasicConsumer(_channel);
         _asyncEventingBasicConsumer.ReceivedAsync += ReceivedAsync;
