@@ -1,10 +1,22 @@
-﻿using RabbitMQ.Client;
+﻿/*
+ * A simple transportation layer using RabbitMQ for message queuing.
+ * Author: Ekin Bulut
+ *
+ * Date: 2025-10-20
+ *
+ * Ref Docs: https://www.rabbitmq.com/tutorials/tutorial-one-dotnet
+ */
+
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace base_transport;
 
 public class TransportationLayer(TransportationLayerCredentials? credentials = null)
 {
+    /// <summary>
+    /// The credentials for connecting to the RabbitMQ server.
+    /// </summary>
     private readonly TransportationLayerCredentials _credentials = credentials ?? new TransportationLayerCredentials();
 
     private IConnection _connection;
@@ -17,9 +29,20 @@ public class TransportationLayer(TransportationLayerCredentials? credentials = n
     public bool IsOpen => _channel?.IsOpen ?? false;
 
 
+    /// <summary>
+    /// The asynchronous eventing basic consumer for receiving messages.
+    /// </summary>
     private AsyncEventingBasicConsumer _asyncEventingBasicConsumer;
+    
+    /// <summary>
+    /// Event triggered when a message is received asynchronously.
+    /// </summary>
     public AsyncEventHandler<BasicDeliverEventArgs> ReceivedAsync;
 
+    /// <summary>
+    /// Connects to the RabbitMQ server asynchronously.
+    /// </summary>
+    /// <param name="cancellationToken"></param>
     public async Task ConnectAsync(CancellationToken cancellationToken = default)
     {
         var factory = new ConnectionFactory
@@ -33,6 +56,13 @@ public class TransportationLayer(TransportationLayerCredentials? credentials = n
         _channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
     }
 
+    /// <summary>
+    /// Publishes a message to the specified queue asynchronously.
+    /// </summary>
+    /// <param name="queueName"></param>
+    /// <param name="body"></param>
+    /// <param name="cancellationToken"></param>
+    /// <exception cref="InvalidOperationException"></exception>
     public async Task BasicPublishAsync(string queueName, byte[] body, CancellationToken cancellationToken = default)
     {
 
@@ -47,6 +77,13 @@ public class TransportationLayer(TransportationLayerCredentials? credentials = n
         await _channel.BasicPublishAsync(string.Empty, queueName, body, cancellationToken: cancellationToken);
     }
 
+    /// <summary>
+    /// Consumes messages from the specified queue asynchronously.
+    /// </summary>
+    /// <param name="queueName"></param>
+    /// <param name="autoAck"></param>
+    /// <param name="cancellationToken"></param>
+    /// <exception cref="InvalidOperationException"></exception>
     public async Task BasicConsumeAsync(string queueName, bool autoAck = false,
         CancellationToken cancellationToken = default)
     {
