@@ -7,24 +7,26 @@
  * Ref Docs: https://www.rabbitmq.com/tutorials/tutorial-one-dotnet
  */
 
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace base_transport;
 
-public class TransportationLayer(TransportationLayerCredentials? credentials = null)
+public class TransportationLayer(IOptionsMonitor<TransportationLayerCredentials>? options = null) : ITransportationLayer
 {
+
     /// <summary>
     /// The credentials for connecting to the RabbitMQ server.
     /// </summary>
-    private readonly TransportationLayerCredentials _credentials = credentials ?? new TransportationLayerCredentials();
+    private readonly IOptionsMonitor<TransportationLayerCredentials> _options = options ?? throw new ArgumentNullException(nameof(options));
 
     private IConnection _connection;
     private IChannel _channel;
 
-    public string HostName => _credentials.HostName;
-    public string UserName => _credentials.UserName;
-    public string Password => _credentials.Password;
+    public string HostName => _options.CurrentValue.HostName;
+    public string UserName => _options.CurrentValue.UserName;
+    public string Password => _options.CurrentValue.Password;
 
     public bool IsOpen => _channel?.IsOpen ?? false;
 
@@ -38,6 +40,7 @@ public class TransportationLayer(TransportationLayerCredentials? credentials = n
     /// Event triggered when a message is received asynchronously.
     /// </summary>
     public AsyncEventHandler<BasicDeliverEventArgs> ReceivedAsync;
+
 
     /// <summary>
     /// Connects to the RabbitMQ server asynchronously.
@@ -101,4 +104,8 @@ public class TransportationLayer(TransportationLayerCredentials? credentials = n
         await _channel.BasicConsumeAsync(queueName, autoAck, _asyncEventingBasicConsumer,
             cancellationToken: cancellationToken);
     }
+
+
+
+ 
 }

@@ -2,6 +2,7 @@ using System.Text;
 using base_transport;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
+using Microsoft.Extensions.Options;
 
 namespace base_transport_tests;
 
@@ -26,16 +27,6 @@ public class TEST_TransportationLayer
 
 
     [Fact]
-    public void If_TransportationLayerCredentials_Is_Null()
-    {
-        var layer = new TransportationLayer();
-
-        Assert.Equal("localhost", layer.HostName);
-        Assert.Equal("guest", layer.UserName);
-        Assert.Equal("guest", layer.Password);
-    }
-
-    [Fact]
     public void If_TransportationLayerCredentials_Is_NOT_Null()
     {
         var credentials = new TransportationLayerCredentials
@@ -45,11 +36,30 @@ public class TEST_TransportationLayer
             Password = "mypassword"
         };
 
-        var layer = new TransportationLayer(credentials);
+        var options = Microsoft.Extensions.Options.Options.Create(credentials);
+        var optionsMonitor = new OptionsMonitorWrapper(options);
+        var layer = new TransportationLayer(optionsMonitor);
 
         Assert.Equal("myhost", layer.HostName);
         Assert.Equal("myuser", layer.UserName);
         Assert.Equal("mypassword", layer.Password);
+    }
+
+    // Helper class to wrap IOptions as IOptionsMonitor for testing
+    private class OptionsMonitorWrapper : IOptionsMonitor<TransportationLayerCredentials>
+    {
+        private readonly IOptions<TransportationLayerCredentials> _options;
+
+        public OptionsMonitorWrapper(IOptions<TransportationLayerCredentials> options)
+        {
+            _options = options;
+        }
+
+        public TransportationLayerCredentials CurrentValue => _options.Value;
+
+        public TransportationLayerCredentials Get(string? name) => _options.Value;
+
+        public IDisposable? OnChange(Action<TransportationLayerCredentials, string?> listener) => null;
     }
 
     [Fact]
@@ -66,7 +76,9 @@ public class TEST_TransportationLayer
             Password = "admin"
         };
 
-        var layer = new TransportationLayer(credentials);
+        var options = Microsoft.Extensions.Options.Options.Create(credentials);
+        var optionsMonitor = new OptionsMonitorWrapper(options);
+        var layer = new TransportationLayer(optionsMonitor);
 
         await layer.ConnectAsync();
         Assert.True(layer.IsOpen);
@@ -83,7 +95,9 @@ public class TEST_TransportationLayer
             Password = "admin"
         };
 
-        var layer = new TransportationLayer(credentials);
+        var options = Microsoft.Extensions.Options.Options.Create(credentials);
+        var optionsMonitor = new OptionsMonitorWrapper(options);
+        var layer = new TransportationLayer(optionsMonitor);
 
         await layer.ConnectAsync();
         Assert.True(layer.IsOpen);
@@ -105,17 +119,16 @@ public class TEST_TransportationLayer
             Password = "admin"
         };
 
-        var layer = new TransportationLayer(credentials);
+        var options = Microsoft.Extensions.Options.Options.Create(credentials);
+        var optionsMonitor = new OptionsMonitorWrapper(options);
+        var layer = new TransportationLayer(optionsMonitor);
 
         await layer.ConnectAsync();
         Assert.True(layer.IsOpen);
 
         string publishedMessage = "Hello from TransportationLayer!";
         string receivedMessage = "";
-
-        var body = System.Text.Encoding.UTF8.GetBytes(publishedMessage);
-        await layer.BasicPublishAsync("test-queue", body);
-
+        
         layer.ReceivedAsync += async (model, ea) =>
         {
             var body = ea.Body.ToArray();
@@ -126,5 +139,10 @@ public class TEST_TransportationLayer
         };
 
         await layer.BasicConsumeAsync("test-queue", autoAck: true);
+
+        var body = System.Text.Encoding.UTF8.GetBytes(publishedMessage);
+        await layer.BasicPublishAsync("test-queue", body);
+
+
     }
 }
