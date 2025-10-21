@@ -1,6 +1,6 @@
 namespace base_transport;
 
-public interface ITransportationLayer
+public interface IBasicMessagingService
 {
     /// <summary>
     /// Connects to the RabbitMQ server asynchronously.

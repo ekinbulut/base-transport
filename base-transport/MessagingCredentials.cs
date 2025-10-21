@@ -1,6 +1,6 @@
 namespace base_transport;
 
-public class TransportationLayerCredentials
+public class MessagingCredentials
 {
     public string HostName { get; set; } = "localhost";
     public string UserName { get; set; } = "guest";

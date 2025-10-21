@@ -13,13 +13,13 @@ using RabbitMQ.Client.Events;
 
 namespace base_transport;
 
-public class TransportationLayer(IOptionsMonitor<TransportationLayerCredentials>? options = null) : ITransportationLayer
+public class BasicMessagingService(IOptionsMonitor<MessagingCredentials>? options = null) : IBasicMessagingService
 {
 
     /// <summary>
     /// The credentials for connecting to the RabbitMQ server.
     /// </summary>
-    private readonly IOptionsMonitor<TransportationLayerCredentials> _options = options ?? throw new ArgumentNullException(nameof(options));
+    private readonly IOptionsMonitor<MessagingCredentials> _options = options ?? throw new ArgumentNullException(nameof(options));
 
     private IConnection _connection;
     private IChannel _channel;

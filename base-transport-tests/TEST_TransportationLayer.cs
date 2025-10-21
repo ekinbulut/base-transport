@@ -29,7 +29,7 @@ public class TEST_TransportationLayer
     [Fact]
     public void If_TransportationLayerCredentials_Is_NOT_Null()
     {
-        var credentials = new TransportationLayerCredentials
+        var credentials = new MessagingCredentials
         {
             HostName = "myhost",
             UserName = "myuser",
@@ -38,7 +38,7 @@ public class TEST_TransportationLayer
 
         var options = Microsoft.Extensions.Options.Options.Create(credentials);
         var optionsMonitor = new OptionsMonitorWrapper(options);
-        var layer = new TransportationLayer(optionsMonitor);
+        var layer = new BasicMessagingService(optionsMonitor);
 
         Assert.Equal("myhost", layer.HostName);
         Assert.Equal("myuser", layer.UserName);
@@ -46,20 +46,20 @@ public class TEST_TransportationLayer
     }
 
     // Helper class to wrap IOptions as IOptionsMonitor for testing
-    private class OptionsMonitorWrapper : IOptionsMonitor<TransportationLayerCredentials>
+    private class OptionsMonitorWrapper : IOptionsMonitor<MessagingCredentials>
     {
-        private readonly IOptions<TransportationLayerCredentials> _options;
+        private readonly IOptions<MessagingCredentials> _options;
 
-        public OptionsMonitorWrapper(IOptions<TransportationLayerCredentials> options)
+        public OptionsMonitorWrapper(IOptions<MessagingCredentials> options)
         {
             _options = options;
         }
 
-        public TransportationLayerCredentials CurrentValue => _options.Value;
+        public MessagingCredentials CurrentValue => _options.Value;
 
-        public TransportationLayerCredentials Get(string? name) => _options.Value;
+        public MessagingCredentials Get(string? name) => _options.Value;
 
-        public IDisposable? OnChange(Action<TransportationLayerCredentials, string?> listener) => null;
+        public IDisposable? OnChange(Action<MessagingCredentials, string?> listener) => null;
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class TEST_TransportationLayer
         
         // Thread.Sleep(15000);
 
-        var credentials = new TransportationLayerCredentials
+        var credentials = new MessagingCredentials
         {
             HostName = "localhost",
             UserName = "admin",
@@ -78,7 +78,7 @@ public class TEST_TransportationLayer
 
         var options = Microsoft.Extensions.Options.Options.Create(credentials);
         var optionsMonitor = new OptionsMonitorWrapper(options);
-        var layer = new TransportationLayer(optionsMonitor);
+        var layer = new BasicMessagingService(optionsMonitor);
 
         await layer.ConnectAsync();
         Assert.True(layer.IsOpen);
@@ -88,7 +88,7 @@ public class TEST_TransportationLayer
     public async Task If_TransportationLayer_Can_Send_Message()
     {
         
-        var credentials = new TransportationLayerCredentials
+        var credentials = new MessagingCredentials
         {
             HostName = "localhost",
             UserName = "admin",
@@ -97,7 +97,7 @@ public class TEST_TransportationLayer
 
         var options = Microsoft.Extensions.Options.Options.Create(credentials);
         var optionsMonitor = new OptionsMonitorWrapper(options);
-        var layer = new TransportationLayer(optionsMonitor);
+        var layer = new BasicMessagingService(optionsMonitor);
 
         await layer.ConnectAsync();
         Assert.True(layer.IsOpen);
@@ -112,7 +112,7 @@ public class TEST_TransportationLayer
     public async Task If_TransportationLayer_Can_Receive_Message()
     {
         
-        var credentials = new TransportationLayerCredentials
+        var credentials = new MessagingCredentials
         {
             HostName = "localhost",
             UserName = "admin",
@@ -121,7 +121,7 @@ public class TEST_TransportationLayer
 
         var options = Microsoft.Extensions.Options.Options.Create(credentials);
         var optionsMonitor = new OptionsMonitorWrapper(options);
-        var layer = new TransportationLayer(optionsMonitor);
+        var layer = new BasicMessagingService(optionsMonitor);
 
         await layer.ConnectAsync();
         Assert.True(layer.IsOpen);
