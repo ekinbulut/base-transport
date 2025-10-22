@@ -15,11 +15,11 @@ namespace base_transport;
 
 public class BasicMessagingService(IOptionsMonitor<MessagingCredentials>? options = null) : IBasicMessagingService
 {
-
     /// <summary>
     /// The credentials for connecting to the RabbitMQ server.
     /// </summary>
-    private readonly IOptionsMonitor<MessagingCredentials> _options = options ?? throw new ArgumentNullException(nameof(options));
+    private readonly IOptionsMonitor<MessagingCredentials> _options =
+        options ?? throw new ArgumentNullException(nameof(options));
 
     private IConnection _connection;
     private IChannel _channel;
@@ -35,7 +35,7 @@ public class BasicMessagingService(IOptionsMonitor<MessagingCredentials>? option
     /// The asynchronous eventing basic consumer for receiving messages.
     /// </summary>
     private AsyncEventingBasicConsumer _asyncEventingBasicConsumer;
-    
+
     /// <summary>
     /// Event triggered when a message is received asynchronously.
     /// </summary>
@@ -68,15 +68,14 @@ public class BasicMessagingService(IOptionsMonitor<MessagingCredentials>? option
     /// <exception cref="InvalidOperationException"></exception>
     public async Task BasicPublishAsync(string queueName, byte[] body, CancellationToken cancellationToken = default)
     {
-
         if (!IsOpen)
         {
             throw new InvalidOperationException("Connection is not open.");
         }
-        
+
         await _channel.QueueDeclareAsync(queue: queueName, durable: true, exclusive: false, autoDelete: false,
             arguments: null, cancellationToken: cancellationToken);
-        
+
         await _channel.BasicPublishAsync(string.Empty, queueName, body, cancellationToken: cancellationToken);
     }
 
@@ -94,7 +93,7 @@ public class BasicMessagingService(IOptionsMonitor<MessagingCredentials>? option
         {
             throw new InvalidOperationException("Connection is not open.");
         }
-        
+
         await _channel.QueueDeclareAsync(queue: queueName, durable: true, exclusive: false, autoDelete: false,
             arguments: null, cancellationToken: cancellationToken);
 
@@ -105,7 +104,19 @@ public class BasicMessagingService(IOptionsMonitor<MessagingCredentials>? option
             cancellationToken: cancellationToken);
     }
 
+    /// <summary>
+    /// Acknowledges a message with the given delivery tag asynchronously.
+    /// </summary>
+    /// <param name="deliveryTag"></param>
+    /// <param name="cancellationToken"></param>
+    /// <exception cref="InvalidOperationException"></exception>
+    public async Task AcknowledgeMessageAsync(ulong deliveryTag, CancellationToken cancellationToken = default)
+    {
+        if (!IsOpen)
+        {
+            throw new InvalidOperationException("Connection is not open.");
+        }
 
-
- 
+        await _channel.BasicAckAsync(deliveryTag, multiple: false, cancellationToken: cancellationToken);
+    }
 }

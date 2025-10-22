@@ -28,6 +28,14 @@ public interface IBasicMessagingService
     /// <exception cref="InvalidOperationException"></exception>
     Task BasicConsumeAsync(string queueName, bool autoAck = false,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Acknowledges a message with the given delivery tag asynchronously.
+    /// </summary>
+    /// <param name="deliveryTag"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task AcknowledgeMessageAsync(ulong deliveryTag, CancellationToken cancellationToken = default);
     
     event AsyncEventHandler<BasicDeliverEventArgs> ReceivedAsync;
 }

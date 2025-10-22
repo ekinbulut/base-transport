@@ -1,4 +1,8 @@
+
+
 using base_transport;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -7,6 +11,23 @@ namespace base_transport_tests;
 
 public class TEST_ServiceExtension
 {
+    private readonly IContainer _container = new ContainerBuilder()
+        .WithName("rabbitmq-test-container")
+        .WithImage("docker.io/rabbitmq:4.1.4-management-alpine")
+        .WithPortBinding("5672", "5672")
+        .WithPortBinding("15672", "15672")
+        .WithEnvironment("RABBITMQ_DEFAULT_USER", "admin")
+        .WithEnvironment("RABBITMQ_DEFAULT_PASS", "admin")
+        .WithEnvironment("RABBITMQ_DEFAULT_VHOST", "/")
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(15672)))
+        .WithReuse(true)
+        .Build();
+
+    public TEST_ServiceExtension()
+    {
+        _container.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+    }
+    
     [Fact]
     public void AddTransportationLayer_ShouldRegisterTransportationLayerCredentials()
     {
@@ -39,7 +60,6 @@ public class TEST_ServiceExtension
         // Arrange
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder().Build();
-
         // Act
         services.AddTransportationLayer(configuration);
         var serviceProvider = services.BuildServiceProvider();
@@ -134,5 +154,28 @@ public class TEST_ServiceExtension
         Environment.SetEnvironmentVariable("RabbitMQ__HostName", null);
         Environment.SetEnvironmentVariable("RabbitMQ__UserName", null);
         Environment.SetEnvironmentVariable("RabbitMQ__Password", null);
+    }
+    
+    [Fact]
+    public async Task AddTransportationLayer_MessageHandlerExecutor_StartAllHandlersAsync_ShouldWork()
+    {
+        
+        // Arrange
+        var services = new ServiceCollection();
+        Environment.SetEnvironmentVariable("RabbitMQ__HostName", "localhost");
+        Environment.SetEnvironmentVariable("RabbitMQ__UserName", "admin");
+        Environment.SetEnvironmentVariable("RabbitMQ__Password", "admin");
+        var configuration = new ConfigurationBuilder()
+            .AddEnvironmentVariables()
+            .Build();
+
+        // Act
+        services.AddTransportationLayer(configuration);
+        var serviceProvider = services.BuildServiceProvider();
+        var options = serviceProvider.GetService<IOptions<MessagingCredentials>>();
+
+        await MessageHandlerExecutor.StartHandlerAsync<TestMessage>(serviceProvider,"test-queue-2");
+        
+
     }
 }

@@ -46,21 +46,7 @@ public class TEST_TransportationLayer
     }
 
     // Helper class to wrap IOptions as IOptionsMonitor for testing
-    private class OptionsMonitorWrapper : IOptionsMonitor<MessagingCredentials>
-    {
-        private readonly IOptions<MessagingCredentials> _options;
 
-        public OptionsMonitorWrapper(IOptions<MessagingCredentials> options)
-        {
-            _options = options;
-        }
-
-        public MessagingCredentials CurrentValue => _options.Value;
-
-        public MessagingCredentials Get(string? name) => _options.Value;
-
-        public IDisposable? OnChange(Action<MessagingCredentials, string?> listener) => null;
-    }
 
     [Fact]
     public async Task If_TransportationLayer_Can_Connect()
