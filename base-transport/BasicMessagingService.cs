@@ -39,7 +39,7 @@ public class BasicMessagingService(IOptionsMonitor<MessagingCredentials>? option
     /// <summary>
     /// Event triggered when a message is received asynchronously.
     /// </summary>
-    public AsyncEventHandler<BasicDeliverEventArgs> ReceivedAsync;
+    public event AsyncEventHandler<BasicDeliverEventArgs> ReceivedAsync;
 
 
     /// <summary>

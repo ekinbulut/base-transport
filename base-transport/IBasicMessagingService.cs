@@ -1,3 +1,5 @@
+using RabbitMQ.Client.Events;
+
 namespace base_transport;
 
 public interface IBasicMessagingService
@@ -26,4 +28,6 @@ public interface IBasicMessagingService
     /// <exception cref="InvalidOperationException"></exception>
     Task BasicConsumeAsync(string queueName, bool autoAck = false,
         CancellationToken cancellationToken = default);
+    
+    event AsyncEventHandler<BasicDeliverEventArgs> ReceivedAsync;
 }
