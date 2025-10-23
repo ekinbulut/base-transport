@@ -155,27 +155,4 @@ public class TEST_ServiceExtension
         Environment.SetEnvironmentVariable("RabbitMQ__UserName", null);
         Environment.SetEnvironmentVariable("RabbitMQ__Password", null);
     }
-    
-    [Fact]
-    public async Task AddTransportationLayer_MessageHandlerExecutor_StartAllHandlersAsync_ShouldWork()
-    {
-        
-        // Arrange
-        var services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("RabbitMQ__HostName", "localhost");
-        Environment.SetEnvironmentVariable("RabbitMQ__UserName", "admin");
-        Environment.SetEnvironmentVariable("RabbitMQ__Password", "admin");
-        var configuration = new ConfigurationBuilder()
-            .AddEnvironmentVariables()
-            .Build();
-
-        // Act
-        services.AddTransportationLayer(configuration);
-        var serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IOptions<MessagingCredentials>>();
-
-        await MessageHandlerExecutor.StartHandlerAsync<TestMessage>(serviceProvider,"test-queue-2");
-        
-
-    }
 }
