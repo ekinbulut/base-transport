@@ -1,8 +1,4 @@
-
-
 using base_transport;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -11,22 +7,6 @@ namespace base_transport_tests;
 
 public class TEST_ServiceExtension
 {
-    private readonly IContainer _container = new ContainerBuilder()
-        .WithName("rabbitmq-test-container")
-        .WithImage("docker.io/rabbitmq:4.1.4-management-alpine")
-        .WithPortBinding("5672", "5672")
-        .WithPortBinding("15672", "15672")
-        .WithEnvironment("RABBITMQ_DEFAULT_USER", "admin")
-        .WithEnvironment("RABBITMQ_DEFAULT_PASS", "admin")
-        .WithEnvironment("RABBITMQ_DEFAULT_VHOST", "/")
-        .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(15672)))
-        .WithReuse(true)
-        .Build();
-
-    public TEST_ServiceExtension()
-    {
-        _container.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-    }
     
     [Fact]
     public void AddTransportationLayer_ShouldRegisterTransportationLayerCredentials()

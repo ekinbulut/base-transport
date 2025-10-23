@@ -6,10 +6,10 @@ using Microsoft.Extensions.Options;
 
 namespace base_transport_tests;
 
-public class TEST_TransportationLayer
+public class TEST_TransportationLayer : IAsyncLifetime
 {
     private readonly IContainer _container = new ContainerBuilder()
-        .WithName("rabbitmq-test-container")
+        // .WithName("rabbitmq-test-container")
         .WithImage("docker.io/rabbitmq:4.1.4-management-alpine")
         .WithPortBinding("5672", "5672")
         .WithPortBinding("15672", "15672")
@@ -17,14 +17,8 @@ public class TEST_TransportationLayer
         .WithEnvironment("RABBITMQ_DEFAULT_PASS", "admin")
         .WithEnvironment("RABBITMQ_DEFAULT_VHOST", "/")
         .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(15672)))
-        .WithReuse(true)
+        // .WithReuse(true)
         .Build();
-
-    public TEST_TransportationLayer()
-    {
-         _container.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-    }
-
 
     [Fact]
     public void If_TransportationLayerCredentials_Is_NOT_Null()
@@ -48,7 +42,7 @@ public class TEST_TransportationLayer
     // Helper class to wrap IOptions as IOptionsMonitor for testing
 
 
-    // [Fact]
+    [Fact]
     public async Task If_TransportationLayer_Can_Connect()
     {
 
@@ -130,5 +124,15 @@ public class TEST_TransportationLayer
         await layer.BasicPublishAsync("test-queue", body);
 
 
+    }
+
+    public Task InitializeAsync()
+    {
+        return _container.StartAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return _container.DisposeAsync().AsTask();
     }
 }
